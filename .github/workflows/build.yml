@@ -1,0 +1,60 @@
+name: Build NetworkReplication Plugin
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate Plugin Structure
+      run: |
+        echo "Validating plugin structure..."
+        if (Test-Path "Plugins\NetworkReplicationSubsystem\NetworkReplicationSubsystem.uplugin") {
+          echo "Plugin descriptor found"
+        } else {
+          echo "Plugin descriptor not found"
+          exit 1
+        }
+        
+        if (Test-Path "Plugins\NetworkReplicationSubsystem\Source") {
+          echo "Source directory found"
+        } else {
+          echo "Source directory not found"
+          exit 1
+        }
+        
+        echo "Plugin structure validation passed!"
+    
+    - name: Validate Documentation
+      run: |
+        echo "Validating documentation..."
+        if (Test-Path "Plugins\NetworkReplicationSubsystem\Docs") {
+          echo "Documentation directory found"
+          Get-ChildItem "Plugins\NetworkReplicationSubsystem\Docs" | ForEach-Object { echo "  - $($_.Name)" }
+        } else {
+          echo "Documentation directory not found"
+          exit 1
+        }
+        
+        echo "Documentation validation passed!"
+    
+    - name: Check Marketplace Package
+      run: |
+        echo "Checking marketplace package structure..."
+        if (Test-Path "MarketplacePackage") {
+          echo "Marketplace package directory found"
+        } else {
+          echo "Marketplace package directory not found (optional)"
+        }
+        
+        echo "All validations passed!"
