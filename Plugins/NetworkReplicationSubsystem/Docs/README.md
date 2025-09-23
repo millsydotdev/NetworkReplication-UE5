@@ -74,6 +74,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## **Support**
 
+- **Fab Marketplace**: [Get the plugin on Fab](https://www.fab.com/portal/listings/d159df69-5779-4809-a708-898a67fe49a7)
 - **GitHub Issues**: [Report bugs and request features](https://github.com/millsydotdev/NetworkReplication-UE5/issues)
 - **Discord**: [Join our community](https://discord.gg/uyJ636Y4u8)
 

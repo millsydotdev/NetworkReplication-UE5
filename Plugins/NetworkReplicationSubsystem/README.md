@@ -140,6 +140,7 @@ Complete documentation is available in the `Docs` folder:
 ## Support
 
 For questions, issues, or feature requests:
+- **Fab Marketplace**: [Get the plugin on Fab](https://www.fab.com/portal/listings/d159df69-5779-4809-a708-898a67fe49a7)
 - Check the documentation in the `Docs` folder
 - Review the troubleshooting guide
 - Open an issue on the project repository

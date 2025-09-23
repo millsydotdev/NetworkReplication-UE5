@@ -19,6 +19,10 @@ This guide provides comprehensive support information for the Network Replicatio
 
 ## **Support Channels**
 
+### **Fab Marketplace**
+- **Best for**: Getting the plugin, updates, and official support
+- **URL**: https://www.fab.com/portal/listings/d159df69-5779-4809-a708-898a67fe49a7
+
 ### **GitHub Issues**
 - **Best for**: Bug reports, feature requests, technical discussions
 - **URL**: https://github.com/millsydotdev/NetworkReplication-UE5/issues
