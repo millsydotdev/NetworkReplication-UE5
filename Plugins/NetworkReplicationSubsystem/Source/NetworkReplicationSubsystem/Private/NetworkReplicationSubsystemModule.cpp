@@ -20,4 +20,4 @@ void FNetworkReplicationSubsystemModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FNetworkReplicationSubsystemModule, NetworkReplicationSubsystem)
+IMPLEMENT_MODULE(FNetworkReplicationSubsystemModule, NetworkReplicationSubsystem);

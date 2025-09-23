@@ -9,6 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/AudioComponent.h"
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
 #include "GameFramework/Pawn.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
