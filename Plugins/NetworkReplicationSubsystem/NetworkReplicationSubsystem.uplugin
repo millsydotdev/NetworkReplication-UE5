@@ -1,0 +1,62 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0.0",
+  "FriendlyName": "Network Replication Subsystem",
+  "Description": "A comprehensive network replication plugin for Unreal Engine 5.6 that simplifies multiplayer game development with Blueprint-friendly components and advanced networking features. Features universal data replication, custom event systems, performance monitoring, and debug tools.",
+  "Category": "Networking",
+  "CreatedBy": "Millsy.dev",
+  "CreatedByURL": "https://millsy.dev",
+  "DocsURL": "https://docs.millsy.dev/network-replication",
+  "MarketplaceURL": "",
+  "FabURL": "com.epicgames.launcher://ue/Fab/product/e7b93fe4-c66b-4c43-b0dd-abfa997cd93d",
+  "SupportURL": "https://discord.gg/uyJ636Y4u8",
+  "CanContainContent": false,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "EnabledByDefault": false,
+  "EngineVersion": "5.6",
+  "SupportedTargetPlatforms": [ "Win64", "Mac", "Linux" ],
+  "SupportedPrograms": [ "UnrealEditor" ],
+  "Modules": [
+    {
+      "Name": "NetworkReplicationSubsystem",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "PlatformAllowList": [ "Win64", "Mac", "Linux" ],
+      "AdditionalDependencies": [ 
+        "Engine", 
+        "CoreUObject", 
+        "Niagara", 
+        "Chooser", 
+        "AnimationCore",
+        "PoseSearch"
+      ]
+    }
+  ],
+  "Plugins": [
+    { "Name": "Niagara", "Enabled": true },
+    { "Name": "Chooser", "Enabled": true },
+    { "Name": "PoseSearch", "Enabled": true }
+  ],
+  "Marketplace": {
+    "Category": "Networking",
+    "Tags": [
+      "Networking",
+      "Multiplayer",
+      "Replication",
+      "Blueprint",
+      "Performance",
+      "Debug",
+      "Animation",
+      "Sound",
+      "Niagara",
+      "Events",
+      "Motion Matching",
+      "Pose Search",
+      "Trajectory"
+    ],
+    "EngineVersions": [ "5.6" ]
+  }
+}

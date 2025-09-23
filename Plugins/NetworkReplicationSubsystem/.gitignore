@@ -1,0 +1,30 @@
+# Plugin build artifacts
+Binaries/
+Intermediate/
+DerivedDataCache/
+.vs/
+
+# Visual Studio files
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Temporary files
+*.tmp
+*.temp
+*.log

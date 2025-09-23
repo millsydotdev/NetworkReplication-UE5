@@ -1,0 +1,34 @@
+// Network Replication Subsystem Resources
+// This file contains resource definitions for the plugin
+
+#include "Windows.h"
+
+// Plugin version information
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0x0L
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_DLL
+FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Millsy.dev"
+            VALUE "FileDescription", "Network Replication Subsystem Plugin"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "NetworkReplicationSubsystem"
+            VALUE "LegalCopyright", "Copyright © 2025 Millsy.dev. All Rights Reserved."
+            VALUE "OriginalFilename", "NetworkReplicationSubsystem.dll"
+            VALUE "ProductName", "Network Replication Subsystem"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
