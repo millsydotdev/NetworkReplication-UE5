@@ -22,18 +22,15 @@ This guide provides comprehensive support information for the Network Replicatio
 ### **GitHub Issues**
 - **Best for**: Bug reports, feature requests, technical discussions
 - **URL**: https://github.com/millsydotdev/NetworkReplication-UE5/issues
-- **Availability**: 24/7
 
 ### **Discord Community**
 - **Best for**: Quick questions, community discussions, real-time help
 - **Invite**: https://discord.gg/uyJ636Y4u8
-- **Availability**: 24/7
 
 ### **Email Support**
 - **Best for**: Private issues, commercial support, detailed problems
 - **Email**: support@millsy.dev
-- **Availability**: Monday-Friday, 9 AM - 5 PM EST
-
+- 
 ---
 
 ## **Self-Help Resources**
@@ -41,27 +38,8 @@ This guide provides comprehensive support information for the Network Replicatio
 ### **Documentation**
 - **Best for**: Learning, tutorials, API reference
 - **URL**: https://github.com/millsydotdev/NetworkReplication-UE5/docs
-- **Availability**: 24/7
-
-### **Video Tutorials**
-- **Best for**: Visual learning, step-by-step guides
-- **URL**: https://youtube.com/millsydev
-- **Availability**: 24/7
-
-### **Community Forum**
-- **Best for**: General discussions, sharing solutions
-- **URL**: https://forum.millsy.dev
-- **Availability**: 24/7
 
 ---
-
-## **Community Support**
-
-### **Discord Channels**
-- **#general**: General discussions
-- **#help**: Technical support
-- **#showcase**: Share your projects
-- **#development**: Development discussions
 
 ### **Community Guidelines**
 - Be respectful and constructive
@@ -74,39 +52,6 @@ This guide provides comprehensive support information for the Network Replicatio
 2. **Provide context** about your problem
 3. **Include relevant code** and error messages
 4. **Be patient** for responses
-
----
-
-## **Professional Support**
-
-### **Support Tiers**
-
-#### **Basic Support**
-- **Scope**: Basic usage questions
-- **Price**: $50/month
-- **Includes**: Email support, documentation access
-
-#### **Priority Support**
-- **Scope**: Advanced technical support
-- **Price**: $150/month
-- **Includes**: Priority support, custom examples, phone support
-
-#### **Enterprise Support**
-- **Scope**: Full technical support
-- **Price**: $500/month
-- **Includes**: Dedicated support, custom development, training
-
-### **Custom Development**
-- **Custom Features**: Tailored to your needs
-- **Integration Support**: Help with project integration
-- **Performance Optimization**: Custom optimization solutions
-- **Training**: Team training and workshops
-
-### **Consulting Services**
-- **Architecture Review**: Project architecture analysis
-- **Performance Audit**: Performance optimization review
-- **Security Assessment**: Security best practices review
-- **Code Review**: Code quality and best practices
 
 ---
 
