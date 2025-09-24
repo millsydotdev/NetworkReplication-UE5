@@ -2,7 +2,7 @@
 ## Professional Network Replication for Unreal Engine 5.6+
 
 [![UE Version](https://img.shields.io/badge/UE-5.6+-blue.svg)](https://www.unrealengine.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Fab-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac%20%7C%20Linux-lightgrey.svg)](https://www.unrealengine.com/)
 [![Game Animation Sample](https://img.shields.io/badge/Compatible-Epic%20Game%20Animation%20Sample-green.svg)](https://www.unrealengine.com/en-US/blog/game-animation-sample)
 
@@ -62,7 +62,7 @@ A comprehensive network replication subsystem that simplifies multiplayer game d
 
 ## **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Fab License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
