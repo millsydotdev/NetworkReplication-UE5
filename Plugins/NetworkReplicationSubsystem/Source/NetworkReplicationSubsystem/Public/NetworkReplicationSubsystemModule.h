@@ -8,7 +8,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleInterface.h"
 
-class FNetworkReplicationSubsystemModule : public IModuleInterface
+class NETWORKREPLICATIONSUBSYSTEM_API FNetworkReplicationSubsystemModule : public IModuleInterface
 {
 public:
 	/** IModuleInterface implementation */
