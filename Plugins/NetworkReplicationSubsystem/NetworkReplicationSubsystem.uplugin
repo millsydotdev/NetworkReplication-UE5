@@ -36,6 +36,18 @@
     }
   ],
   "Plugins": [
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    },
+    {
+      "Name": "Chooser",
+      "Enabled": true
+    },
+    {
+      "Name": "PoseSearch",
+      "Enabled": true
+    }
   ],
   "Marketplace": {
     "Category": "Networking",
