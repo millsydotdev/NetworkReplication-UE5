@@ -11,6 +11,9 @@ public class NetworkReplicationSubsystem : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
+		// Use modern UE5.6 include order
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
+		
 		PublicIncludePaths.AddRange(
 			new string[] {
 			}
@@ -28,9 +31,9 @@ public class NetworkReplicationSubsystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"NetCore",
+				"AnimationCore",
 				"Niagara",
 				"Chooser",
-				"AnimationCore",
 				"PoseSearch"
 			}
 		);
