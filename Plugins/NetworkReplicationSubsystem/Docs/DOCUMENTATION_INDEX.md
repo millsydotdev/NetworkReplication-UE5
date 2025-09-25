@@ -22,6 +22,12 @@ This index provides a comprehensive overview of all documentation available for 
 - **[Game Animation Sample Integration](GAME_ANIMATION_SAMPLE_INTEGRATION.md)** - Epic's Game Animation Sample setup
 - **[Examples](EXAMPLES.md)** - Comprehensive tutorials and code examples
 
+### **Custom RPC Integration**
+- **[Custom RPC Guide](CUSTOM_RPC_GUIDE.md)** - Complete guide for integrating custom RPCs with the plugin
+- **[Hybrid Approach Guide](HYBRID_APPROACH.md)** - Advanced patterns for combining plugin functions with custom RPCs
+- **[RPC Performance Guide](RPC_PERFORMANCE.md)** - Advanced optimization techniques for custom RPCs
+- **[Extending Plugin Guide](EXTENDING_PLUGIN.md)** - How to extend plugin functionality with custom code
+
 ### **Support & Troubleshooting**
 - **[Troubleshooting](Troubleshooting.md)** - Common issues and solutions
 - **[Support](SUPPORT.md)** - Community support and contact information
@@ -42,6 +48,12 @@ This index provides a comprehensive overview of all documentation available for 
 - **Trajectory Data** - Synchronize character movement trajectories
 - **Motion Matching Databases** - Share motion matching databases
 - **Game Animation Sample** - Full compatibility with Epic's 500+ animations
+
+### **Custom RPC Integration**
+- **Custom RPC Setup** - Complete guide for integrating custom RPCs with the plugin
+- **Hybrid Approach** - Advanced patterns for combining plugin functions with custom RPCs
+- **Performance Optimization** - Advanced optimization techniques for custom RPCs
+- **Plugin Extension** - How to extend plugin functionality with custom code
 
 ### **Performance & Debugging**
 - **Performance Monitoring** - Real-time bandwidth and latency tracking
@@ -67,6 +79,12 @@ This index provides a comprehensive overview of all documentation available for 
 1. **Start with**: [UE5.6 Compatibility](UE5_COMPATIBILITY.md) - Engine-specific features
 2. **Then**: [Game Animation Sample Integration](GAME_ANIMATION_SAMPLE_INTEGRATION.md) - Motion matching setup
 3. **Next**: [Troubleshooting](Troubleshooting.md) - Advanced problem solving
+
+### **For Custom RPC Integration**
+1. **Start with**: [Custom RPC Guide](CUSTOM_RPC_GUIDE.md) - Basic custom RPC setup
+2. **Then**: [Hybrid Approach Guide](HYBRID_APPROACH.md) - Advanced integration patterns
+3. **Next**: [RPC Performance Guide](RPC_PERFORMANCE.md) - Optimization techniques
+4. **Advanced**: [Extending Plugin Guide](EXTENDING_PLUGIN.md) - Plugin customization
 
 ---
 
@@ -119,6 +137,12 @@ NetworkReplicationSubsystem/
 3. Use [Console Commands](CONSOLE_COMMANDS.md) for debugging
 4. Troubleshoot with [Troubleshooting](Troubleshooting.md)
 
+### **Path 4: Custom RPC Integration**
+1. Start with [Custom RPC Guide](CUSTOM_RPC_GUIDE.md)
+2. Learn [Hybrid Approach Guide](HYBRID_APPROACH.md) patterns
+3. Optimize with [RPC Performance Guide](RPC_PERFORMANCE.md)
+4. Extend with [Extending Plugin Guide](EXTENDING_PLUGIN.md)
+
 ---
 
 ## **📋 Documentation Overview**
@@ -133,6 +157,10 @@ NetworkReplicationSubsystem/
 - **Console Commands** - 21 debugging commands
 - **Examples** - Comprehensive tutorials and code examples
 - **Game Animation Sample Integration** - Epic's sample project setup
+- **Custom RPC Guide** - Complete guide for integrating custom RPCs
+- **Hybrid Approach Guide** - Advanced patterns for combining plugin and custom RPCs
+- **RPC Performance Guide** - Advanced optimization techniques
+- **Extending Plugin Guide** - How to extend plugin functionality
 - **Troubleshooting** - Common issues and solutions
 - **Support** - Community support information
 
@@ -154,6 +182,11 @@ NetworkReplicationSubsystem/
 - **Start with**: [UE5.6 Compatibility](UE5_COMPATIBILITY.md)
 - **Focus on**: Motion matching and Game Animation Sample integration
 - **Resources**: [Game Animation Sample Integration](GAME_ANIMATION_SAMPLE_INTEGRATION.md), [Examples](EXAMPLES.md)
+
+### **Custom RPC Integration**
+- **Start with**: [Custom RPC Guide](CUSTOM_RPC_GUIDE.md)
+- **Focus on**: Integrating custom RPCs with the plugin
+- **Resources**: [Hybrid Approach Guide](HYBRID_APPROACH.md), [RPC Performance Guide](RPC_PERFORMANCE.md), [Extending Plugin Guide](EXTENDING_PLUGIN.md)
 
 ---
 
