@@ -4,6 +4,7 @@
 // Implements FNetworkReplicationSubsystemModule, the main module interface for the Network Replication Subsystem plugin.
 
 #include "NetworkReplicationSubsystemModule.h"
+#include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FNetworkReplicationSubsystemModule"
 

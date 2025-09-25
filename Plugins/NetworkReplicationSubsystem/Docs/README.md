@@ -20,7 +20,7 @@ A comprehensive network replication subsystem that simplifies multiplayer game d
 ### **Basic Usage**
 1. **Add Component**: Add `Network Replication Component` to your Blueprint
 2. **Call Functions**: Use the replication functions in Blueprint or C++
-3. **Enjoy**: Seamless network replication without writing custom RPCs!
+3. **Enjoy**: Seamless network replication with built-in functions, plus support for custom RPCs when needed!
 
 ---
 
@@ -35,6 +35,25 @@ A comprehensive network replication subsystem that simplifies multiplayer game d
 - **📊 Performance Monitoring**: Built-in bandwidth and performance tracking
 - **🔧 Blueprint Integration**: Full Blueprint support with organized categories
 - **⚡ Optimization**: Built-in relevancy and bandwidth management
+- **🔗 Custom RPC Support**: Works alongside custom RPCs for complete flexibility
+
+---
+
+## **Plugin Philosophy**
+
+This plugin provides **built-in replication functions** for common multiplayer scenarios (animations, sounds, effects, spawning) while **fully supporting custom RPCs** for game-specific logic. Use the plugin for standard replication needs, and add custom RPCs for unique game mechanics.
+
+**When to use plugin functions:**
+- ✅ Animations, sounds, effects, basic spawning
+- ✅ Standard multiplayer scenarios
+- ✅ Quick prototyping and development
+
+**When to use custom RPCs:**
+- 🎯 Game-specific logic and mechanics
+- 🎯 Complex data structures
+- 🎯 Specialized networking requirements
+
+**Hybrid approach:** Use both! Plugin functions for effects, custom RPCs for game logic.
 
 ---
 
