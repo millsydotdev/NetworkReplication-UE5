@@ -31,6 +31,7 @@ public class NetworkReplicationSubsystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"NetCore",
+				"AnimationCore",
 				"Niagara",
 				"Chooser",
 				"PoseSearch"
