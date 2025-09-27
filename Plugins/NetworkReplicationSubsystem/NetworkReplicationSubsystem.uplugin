@@ -8,7 +8,7 @@
   "CreatedBy": "Millsy.dev",
   "CreatedByURL": "https://millsy.dev",
   "DocsURL": "https://github.com/millsydotdev/NetworkReplication-UE5/tree/main/Plugins/NetworkReplicationSubsystem/Docs",
-  "MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/9dfcf818-287b-4c9a-86cd-c8de7b7399b9",
+  "MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/e7b93fe4-c66b-4c43-b0dd-abfa997cd93d",
   "FabURL": "https://www.fab.com/portal/listings/e7b93fe4-c66b-4c43-b0dd-abfa997cd93d",
   "SupportURL": "https://discord.gg/uyJ636Y4u8",
   "CanContainContent": false,
@@ -28,7 +28,6 @@
       "AdditionalDependencies": [ 
         "Engine", 
         "CoreUObject", 
-        "AnimationCore",
         "Niagara",
         "Chooser",
         "PoseSearch"
