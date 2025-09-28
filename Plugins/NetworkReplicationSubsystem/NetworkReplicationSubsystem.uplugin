@@ -11,6 +11,7 @@
   "MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/86ff58cf-6f61-4a31-8514-52e4cc3e43eb",
   "FabURL": "https://www.fab.com/portal/listings/86ff58cf-6f61-4a31-8514-52e4cc3e43eb",
   "SupportURL": "https://discord.gg/uyJ636Y4u8",
+  "Icon": "Resources/NSSLogo.png",
   "CanContainContent": false,
   "IsBetaVersion": false,
   "IsExperimentalVersion": false,
