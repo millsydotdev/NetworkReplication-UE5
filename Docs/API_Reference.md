@@ -1,372 +1,446 @@
-# Network Replication Subsystem - API Reference
-## Complete API Documentation
+# NetworkReplication Plugin - API Reference
 
-The Network Replication Subsystem provides Blueprint-friendly replication functions for animations, sounds, Niagara systems, and actor spawning in Unreal Engine 5.6+.
+Complete reference for the NetworkReplicationComponent API.
 
----
+## Class: UNetworkReplicationComponent
 
-## **UNetworkReplicationComponent**
+A comprehensive network replication component that handles synchronization of game state across multiplayer clients.
 
-The main component for handling network replication.
+### Inheritance
+- `UActorComponent` → `UNetworkReplicationComponent`
 
-### **Properties**
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `bAutoRegister` | `bool` | Automatically register with subsystem on BeginPlay |
-| `ReplicationSettings` | `FNetworkReplicationSettings` | Configuration settings for replication |
-
-### **Animation Functions**
-
-**ReplicateAnimation**
-
+### Header
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Animation")
-void ReplicateAnimation(UAnimMontage* Montage, float PlayRate = 1.0f, float StartTime = 0.0f);
+#include "NetworkReplicationComponent.h"
 ```
 
-- **Description**: Replicates an animation montage to all clients
-- **Parameters**:
-  - `Montage`: The animation montage to replicate
-  - `PlayRate`: Playback rate multiplier
-  - `StartTime`: Time to start playing from
+## Public Functions
 
-**ReplicateAnimationStop**
+### Animation Replication
 
+#### `ReplicateAnimation(UAnimMontage* Montage, float PlayRate = 1.0f, float StartingPosition = 0.0f)`
+Replicates an animation montage across all clients with optional prediction.
+
+**Parameters:**
+- `Montage`: The animation montage to play
+- `PlayRate`: Playback speed multiplier (default: 1.0f)
+- `StartingPosition`: Starting position in seconds (default: 0.0f)
+
+**Usage:**
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Animation")
-void ReplicateAnimationStop(UAnimMontage* Montage, bool bBlendOut = true);
+// Basic animation replication
+ReplicateAnimation(MyMontage, 1.0f, 0.0f);
+
+// With custom play rate
+ReplicateAnimation(MyMontage, 1.5f, 0.0f);
 ```
 
-- **Description**: Stops an animation montage on all clients
-- **Parameters**:
-  - `Montage`: The animation montage to stop
-  - `bBlendOut`: Whether to blend out the animation
+#### `ReplicateAnimationStop(UAnimMontage* Montage)`
+Stops a specific animation montage across all clients.
 
-### **Audio Functions**
+**Parameters:**
+- `Montage`: The animation montage to stop
 
-**ReplicateSound**
-
+**Usage:**
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Audio")
-void ReplicateSound(USoundBase* Sound, float Volume = 1.0f, float Pitch = 1.0f, float StartTime = 0.0f);
+ReplicateAnimationStop(MyMontage);
 ```
 
-- **Description**: Replicates a sound to all clients
-- **Parameters**:
-  - `Sound`: The sound asset to replicate
-  - `Volume`: Volume multiplier
-  - `Pitch`: Pitch multiplier
-  - `StartTime`: Time to start playing from
+### Sound Replication
 
-**ReplicateSoundAtLocation**
+#### `ReplicateSound(USoundBase* Sound, float VolumeMultiplier = 1.0f, float PitchMultiplier = 1.0f, float StartTime = 0.0f)`
+Replicates a sound effect using the actor's audio component.
 
+**Parameters:**
+- `Sound`: The sound asset to play
+- `VolumeMultiplier`: Volume adjustment (default: 1.0f)
+- `PitchMultiplier`: Pitch adjustment (default: 1.0f)
+- `StartTime`: Start time in seconds (default: 0.0f)
+
+#### `ReplicateSoundAtLocation(USoundBase* Sound, FVector Location, float VolumeMultiplier = 1.0f, float PitchMultiplier = 1.0f, float StartTime = 0.0f)`
+Replicates a sound effect at a specific world location.
+
+**Parameters:**
+- `Sound`: The sound asset to play
+- `Location`: World position to play the sound
+- `VolumeMultiplier`: Volume adjustment (default: 1.0f)
+- `PitchMultiplier`: Pitch adjustment (default: 1.0f)
+- `StartTime`: Start time in seconds (default: 0.0f)
+
+### Actor Replication
+
+#### `ReplicateActorSpawn(TSubclassOf<AActor> ActorClass, FVector Location = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, bool bAttachToOwner = false)`
+Spawns an actor at a specific location and optionally attaches it to the owner.
+
+**Parameters:**
+- `ActorClass`: The class of actor to spawn
+- `Location`: World position to spawn (default: ZeroVector)
+- `Rotation`: World rotation to spawn (default: ZeroRotator)
+- `bAttachToOwner`: Whether to attach to the component owner (default: false)
+
+**Returns:** `AActor*` - The spawned actor (nullptr on clients)
+
+#### `ReplicateActorSpawnAttached(TSubclassOf<AActor> ActorClass, FName AttachSocketName = NAME_None, FVector LocationOffset = FVector::ZeroVector, FRotator RotationOffset = FRotator::ZeroRotator)`
+Spawns an actor and attaches it to the owner with hot joining support.
+
+**Parameters:**
+- `ActorClass`: The class of actor to spawn
+- `AttachSocketName`: Socket name for attachment (default: NAME_None)
+- `LocationOffset`: Offset from owner location (default: ZeroVector)
+- `RotationOffset`: Offset from owner rotation (default: ZeroRotator)
+
+**Returns:** `AActor*` - The spawned actor (nullptr on clients)
+
+### Niagara Effects
+
+#### `ReplicateNiagaraEffect(UNiagaraSystem* Effect, FVector Location = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, bool bAttachToOwner = false, FName AttachSocketName = NAME_None)`
+Replicates a Niagara particle effect.
+
+**Parameters:**
+- `Effect`: The Niagara system to spawn
+- `Location`: World position to spawn (default: ZeroVector)
+- `Rotation`: World rotation to spawn (default: ZeroRotator)
+- `bAttachToOwner`: Whether to attach to the component owner (default: false)
+- `AttachSocketName`: Socket name for attachment (default: NAME_None)
+
+**Returns:** `UNiagaraComponent*` - The Niagara component (nullptr on clients)
+
+### Variable Replication
+
+#### `ReplicateStringVariable(FName VariableName, const FString& Value)`
+Replicates a string variable across all clients.
+
+**Parameters:**
+- `VariableName`: Name identifier for the variable
+- `Value`: String value to replicate
+
+#### `ReplicateFloatVariable(FName VariableName, float Value)`
+Replicates a float variable across all clients.
+
+**Parameters:**
+- `VariableName`: Name identifier for the variable
+- `Value`: Float value to replicate
+
+#### `ReplicateIntVariable(FName VariableName, int32 Value)`
+Replicates an integer variable across all clients.
+
+**Parameters:**
+- `VariableName`: Name identifier for the variable
+- `Value`: Integer value to replicate
+
+#### `ReplicateBoolVariable(FName VariableName, bool Value)`
+Replicates a boolean variable across all clients.
+
+**Parameters:**
+- `VariableName`: Name identifier for the variable
+- `Value`: Boolean value to replicate
+
+#### `ReplicateVectorVariable(FName VariableName, FVector Value)`
+Replicates a vector variable across all clients.
+
+**Parameters:**
+- `VariableName`: Name identifier for the variable
+- `Value`: Vector value to replicate
+
+### Custom Events
+
+#### `ReplicateCustomEvent(FName EventName, const FString& EventData = TEXT(""))`
+Replicates a custom event with optional data.
+
+**Parameters:**
+- `EventName`: Name of the custom event
+- `EventData`: Optional string data for the event (default: empty)
+
+### Motion Matching
+
+#### `ReplicateMotionMatchingDatabase(UObject* Database)`
+Replicates motion matching database data.
+
+**Parameters:**
+- `Database`: Motion matching database object
+
+#### `ReplicatePoseSearchSchema(UObject* Schema)`
+Replicates pose search schema data.
+
+**Parameters:**
+- `Schema`: Pose search schema object
+
+#### `ReplicateTrajectoryData(const FVector& Position, const FRotator& Rotation)`
+Replicates trajectory data for motion matching.
+
+**Parameters:**
+- `Position`: Trajectory position
+- `Rotation`: Trajectory rotation
+
+### Testing Functions
+
+#### `TestHotJoining()`
+Tests hot joining functionality by simulating attachment scenarios.
+
+**Usage:**
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Audio")
-void ReplicateSoundAtLocation(USoundBase* Sound, FVector Location, float Volume = 1.0f, float Pitch = 1.0f);
+// Call from console or Blueprint
+TestHotJoining();
 ```
 
-- **Description**: Replicates a sound at a specific world location
-- **Parameters**:
-  - `Sound`: The sound asset to replicate
-  - `Location`: World location to play the sound
-  - `Volume`: Volume multiplier
-  - `Pitch`: Pitch multiplier
+#### `TestHighPingPrediction()`
+Tests high ping scenarios by setting network lag simulation.
 
-### **Actor Spawning Functions**
-
-**ReplicateActorSpawn**
-
+**Usage:**
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Spawning")
-AActor* ReplicateActorSpawn(TSubclassOf<AActor> ActorClass, FVector Location, FRotator Rotation, bool bAutoDestroy = false);
+// Call from console or Blueprint
+TestHighPingPrediction();
 ```
 
-- **Description**: Spawns an actor on all clients
-- **Parameters**:
-  - `ActorClass`: The class of actor to spawn
-  - `Location`: World location to spawn at
-  - `Rotation`: World rotation to spawn with
-  - `bAutoDestroy`: Whether to automatically destroy after a delay
-- **Returns**: The spawned actor (on server)
+#### `TestLowFPSScenario()`
+Tests low FPS scenarios by limiting frame rate.
 
-**ReplicateActorDestroy**
-
+**Usage:**
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Spawning")
-void ReplicateActorDestroy(AActor* Actor);
+// Call from console or Blueprint
+TestLowFPSScenario();
 ```
 
-- **Description**: Destroys an actor on all clients
-- **Parameters**:
-  - `Actor`: The actor to destroy
+### Debug Functions
 
-### **Niagara Effects Functions**
+#### `EnableDebugLogging(bool bEnabled)`
+Enables or disables debug logging for the component.
 
-**ReplicateNiagaraEffect**
+**Parameters:**
+- `bEnabled`: Whether to enable debug logging
 
-```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Effects")
-UNiagaraComponent* ReplicateNiagaraEffect(UNiagaraSystem* System, FVector Location, FRotator Rotation);
-```
+#### `LogReplicationEvent(const FString& EventName)`
+Logs a custom replication event for debugging.
 
-- **Description**: Spawns a Niagara effect on all clients
-- **Parameters**:
-  - `System`: The Niagara system to spawn
-  - `Location`: World location to spawn at
-  - `Rotation`: World rotation to spawn with
-- **Returns**: The Niagara component (on server)
+**Parameters:**
+- `EventName`: Name of the event to log
 
-### **Motion Matching Functions**
+#### `GetReplicationStats() const`
+Returns replication statistics as a formatted string.
 
-**ReplicateMotionMatchingDatabase**
+**Returns:** `FString` - Formatted statistics string
 
-```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Motion Matching")
-void ReplicateMotionMatchingDatabase(UObject* Database);
-```
+## Properties
 
-- **Description**: Replicates motion matching database to all clients
-- **Parameters**:
-  - `Database`: The motion matching database to replicate
-- **Compatibility**: Works with Epic's Game Animation Sample project
+### Debug Properties
 
-**ReplicatePoseSearchSchema**
+#### `bool bDebugMode`
+Whether debug mode is enabled for this component.
 
-```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Motion Matching")
-void ReplicatePoseSearchSchema(UObject* Schema);
-```
+#### `int32 TotalReplications`
+Total number of replications performed by this component.
 
-- **Description**: Replicates pose search schema to all clients
-- **Parameters**:
-  - `Schema`: The pose search schema to replicate
-- **Compatibility**: Full PoseSearch plugin integration
+#### `float LastReplicationTime`
+Time of the last replication event.
 
-**ReplicateTrajectoryData**
+### Replicated Properties
 
-```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication|Motion Matching")
-void ReplicateTrajectoryData(const FVector& Position, const FRotator& Rotation);
-```
+#### `FAttachmentInfo AttachmentInfo`
+Replicated attachment information for hot joining support.
 
-- **Description**: Replicates trajectory data for motion matching
-- **Parameters**:
-  - `Position`: World position for trajectory
-  - `Rotation`: World rotation for trajectory
-- **Use Case**: Essential for motion matching locomotion systems
+#### `FPredictionState PredictionState`
+Replicated prediction state for client-side prediction.
 
-### **Utility Functions**
+#### `FAnimationPredictionData AnimationPrediction`
+Replicated animation prediction data.
 
-**IsServer**
+## Events
 
-```cpp
-UFUNCTION(BlueprintPure, Category = "Network Replication|Utility")
-bool IsServer() const;
-```
+### Animation Events
 
-- **Description**: Returns true if running on server
-- **Returns**: True if server, false if client
+#### `FOnAnimationReplicated OnAnimationReplicated`
+Broadcast when an animation is replicated.
 
-**IsClient**
+**Signature:** `void OnAnimationReplicated(UAnimMontage* Montage)`
 
-```cpp
-UFUNCTION(BlueprintPure, Category = "Network Replication|Utility")
-bool IsClient() const;
-```
+### Sound Events
 
-- **Description**: Returns true if running on client
-- **Returns**: True if client, false if server
+#### `FOnSoundReplicated OnSoundReplicated`
+Broadcast when a sound is replicated.
 
-**GetOwningActor**
+**Signature:** `void OnSoundReplicated(USoundBase* Sound)`
 
-```cpp
-UFUNCTION(BlueprintPure, Category = "Network Replication|Utility")
-AActor* GetOwningActor() const;
-```
+### Actor Events
 
-- **Description**: Gets the actor that owns this component
-- **Returns**: The owning actor
+#### `FOnActorSpawnedReplicated OnActorSpawned`
+Broadcast when an actor is spawned and replicated.
 
----
+**Signature:** `void OnActorSpawnedReplicated(AActor* SpawnedActor)`
 
-## **UNetworkReplicationSubsystem**
+### Niagara Events
 
-The subsystem that manages all network replication components.
+#### `FOnNiagaraEffectReplicated OnNiagaraEffectReplicated`
+Broadcast when a Niagara effect is replicated.
 
-### **Component Management Functions**
+**Signature:** `void OnNiagaraEffectReplicated(UNiagaraSystem* Effect)`
 
-**GetReplicationComponent**
+### Variable Events
 
-```cpp
-UFUNCTION(BlueprintPure, Category = "Network Replication Subsystem")
-UNetworkReplicationComponent* GetReplicationComponent(AActor* Actor) const;
-```
+#### `FOnVariableReplicated OnVariableReplicated`
+Broadcast when a variable is replicated.
 
-- **Description**: Gets the replication component for a specific actor
-- **Parameters**:
-  - `Actor`: The actor to get the component from
-- **Returns**: The replication component, or nullptr if not found
+**Signature:** `void OnVariableReplicated(FName VariableName, FString VariableValue)`
 
-**RegisterReplicationComponent**
+### Custom Event Events
 
-```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication Subsystem")
-void RegisterReplicationComponent(UNetworkReplicationComponent* Component);
-```
+#### `FOnCustomEventReplicated OnCustomEventReplicated`
+Broadcast when a custom event is replicated.
 
-- **Description**: Registers a replication component with the subsystem
-- **Parameters**:
-  - `Component`: The component to register
+**Signature:** `void OnCustomEventReplicated(FName EventName, FString EventData)`
 
-**UnregisterReplicationComponent**
+### Hot Joining Events
+
+#### `FOnAttachmentInfoReplicated OnAttachmentInfoReplicated`
+Broadcast when attachment information is replicated for hot joining.
+
+**Signature:** `void OnAttachmentInfoReplicated(FAttachmentInfo AttachmentInfo)`
+
+### Prediction Events
+
+#### `FOnPredictionStateReplicated OnPredictionStateReplicated`
+Broadcast when prediction state is replicated.
+
+**Signature:** `void OnPredictionStateReplicated(FPredictionState PredictionState)`
+
+#### `FOnAnimationPredicted OnAnimationPredicted`
+Broadcast when animation prediction is triggered.
+
+**Signature:** `void OnAnimationPredicted(FAnimationPredictionData PredictionData)`
+
+#### `FOnAnimationCorrected OnAnimationCorrected`
+Broadcast when animation prediction is corrected by the server.
+
+**Signature:** `void OnAnimationCorrected(FAnimationPredictionData CorrectionData)`
+
+## Data Structures
+
+### FAttachmentInfo
+Structure containing attachment information for hot joining support.
 
 ```cpp
-UFUNCTION(BlueprintCallable, Category = "Network Replication Subsystem")
-void UnregisterReplicationComponent(UNetworkReplicationComponent* Component);
-```
-
-- **Description**: Unregisters a replication component from the subsystem
-- **Parameters**:
-  - `Component`: The component to unregister
-
----
-
-## **FNetworkReplicationSettings**
-
-Configuration settings for network replication.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `bEnableReplication` | `bool` | `true` | Whether replication is enabled |
-| `ReplicationFrequency` | `float` | `60.0f` | Frequency of replication updates (Hz) |
-| `MaxReplicationDistance` | `float` | `10000.0f` | Maximum distance for replication |
-| `bUseRelevancy` | `bool` | `true` | Whether to use relevancy checking |
-| `bCompressData` | `bool` | `false` | Whether to compress replication data |
-
----
-
-## **Epic Game Animation Sample Integration**
-
-This plugin is **fully compatible** with Epic's Game Animation Sample project, providing seamless motion matching replication for multiplayer games.
-
-### **Game Animation Sample Setup**
-
-1. **Download the Game Animation Sample** from Epic Games
-2. **Add this plugin** to your Game Animation Sample project
-3. **Enable required plugins**: PoseSearch, Chooser, AnimationCore
-4. **Use motion matching functions** for network replication
-
-### **Motion Matching Replication Example**
-
-```cpp
-// Replicate pose search schema for motion matching
-ReplicationComponent->ReplicatePoseSearchSchema(MyPoseSearchSchema);
-
-// Replicate trajectory data for locomotion
-ReplicationComponent->ReplicateTrajectoryData(CharacterLocation, CharacterRotation);
-
-// Replicate motion matching database
-ReplicationComponent->ReplicateMotionMatchingDatabase(MyMotionMatchingDatabase);
-```
-
-### **Blueprint Integration**
-
-All motion matching functions are available in Blueprint under:
-- **Category**: `Network Replication|Motion Matching`
-- **Events**: `OnMotionMatchingReplicated`, `OnTrajectoryReplicated`, `OnPoseSearchReplicated`
-
----
-
-## **Usage Examples**
-
-### **Adding the Component**
-
-1. **In Blueprint Editor**:
-   - Open your Blueprint
-   - Click "Add Component"
-   - Search for "Network Replication Component"
-   - Add it to your Blueprint
-
-2. **In C++**:
-   ```cpp
-   // In your class constructor
-   ReplicationComponent = CreateDefaultSubobject<UNetworkReplicationComponent>(TEXT("ReplicationComponent"));
-   ```
-
-### **Animation Replication**
-
-```cpp
-// In Blueprint: Call "Replicate Animation" function
-// In C++:
-if (ReplicationComponent)
+USTRUCT(BlueprintType)
+struct FAttachmentInfo
 {
-    ReplicationComponent->ReplicateAnimation(MyMontage, 1.0f, 0.0f);
+    UPROPERTY(BlueprintReadWrite)
+    TObjectPtr<UPrimitiveComponent> Component;
+    
+    UPROPERTY(BlueprintReadWrite)
+    FName SocketName;
+    
+    UPROPERTY(BlueprintReadWrite)
+    FTransform RelativeTransform;
+    
+    UPROPERTY(BlueprintReadWrite)
+    TObjectPtr<AActor> Owner;
+    
+    UPROPERTY(BlueprintReadWrite)
+    bool bKeepWorldTransform;
+    
+    UPROPERTY(BlueprintReadWrite)
+    bool bIsActive;
+};
+```
+
+### FPredictionState
+Structure containing prediction state information.
+
+```cpp
+USTRUCT(BlueprintType)
+struct FPredictionState
+{
+    UPROPERTY(BlueprintReadWrite)
+    double ClientSendTime;
+    
+    UPROPERTY(BlueprintReadWrite)
+    uint32 InputFrame;
+    
+    UPROPERTY(BlueprintReadWrite)
+    bool bIsPredicting;
+    
+    UPROPERTY(BlueprintReadWrite)
+    float CorrectionFactor;
+};
+```
+
+### FAnimationPredictionData
+Structure containing animation prediction data.
+
+```cpp
+USTRUCT(BlueprintType)
+struct FAnimationPredictionData
+{
+    UPROPERTY(BlueprintReadWrite)
+    TObjectPtr<UAnimMontage> Montage;
+    
+    UPROPERTY(BlueprintReadWrite)
+    float PlayRate;
+    
+    UPROPERTY(BlueprintReadWrite)
+    float StartingPosition;
+    
+    UPROPERTY(BlueprintReadWrite)
+    double PredictionTime;
+    
+    UPROPERTY(BlueprintReadWrite)
+    bool bIsValid;
+};
+```
+
+## Usage Examples
+
+### Basic Animation Replication
+```cpp
+// Get the component
+UNetworkReplicationComponent* RepComp = GetComponentByClass<UNetworkReplicationComponent>();
+
+// Replicate animation
+RepComp->ReplicateAnimation(MyMontage, 1.0f, 0.0f);
+```
+
+### Spawning Attached Actor
+```cpp
+// Spawn actor with hot joining support
+RepComp->ReplicateActorSpawnAttached(
+    MyActorClass,
+    TEXT("WeaponSocket"),
+    FVector(0, 0, 0),
+    FRotator(0, 0, 0)
+);
+```
+
+### Variable Replication
+```cpp
+// Replicate player health
+RepComp->ReplicateFloatVariable(TEXT("Health"), 85.0f);
+
+// Replicate player name
+RepComp->ReplicateStringVariable(TEXT("PlayerName"), TEXT("Player1"));
+```
+
+### Event Binding
+```cpp
+// Bind to animation replicated event
+RepComp->OnAnimationReplicated.AddDynamic(this, &AMyActor::OnAnimationReplicated);
+
+// Implementation
+void AMyActor::OnAnimationReplicated(UAnimMontage* Montage)
+{
+    UE_LOG(LogTemp, Log, TEXT("Animation replicated: %s"), *Montage->GetName());
 }
 ```
 
-### **Sound Replication**
+## Console Commands
 
-```cpp
-// In Blueprint: Call "Replicate Sound" function
-// In C++:
-if (ReplicationComponent)
-{
-    ReplicationComponent->ReplicateSound(MySound, 1.0f, 1.0f, 0.0f);
-}
-```
+### Network Testing
+- `Net.PktLag <value>` - Set network packet lag in milliseconds
+- `Net.PktLagVariance <value>` - Set network packet lag variance
+- `stat net` - Display network statistics
 
-### **Actor Spawning**
+### Performance Testing
+- `t.MaxFPS <value>` - Set maximum frame rate
+- `r.OneFrameThreadLag` - Enable one frame thread lag for testing
 
-```cpp
-// In Blueprint: Call "Replicate Actor Spawn" function
-// In C++:
-if (ReplicationComponent)
-{
-    AActor* SpawnedActor = ReplicationComponent->ReplicateActorSpawn(
-        MyActorClass,
-        GetActorLocation(),
-        GetActorRotation(),
-        false
-    );
-}
-```
-
----
-
-## **Performance Optimization**
-
-- **Use Relevancy**: Enable relevancy checking to only replicate to nearby clients
-- **Adjust Frequency**: Lower replication frequency for less critical updates
-- **Distance Culling**: Set appropriate maximum replication distance
-- **Compression**: Enable data compression for bandwidth-limited scenarios
-
----
-
-## **Best Practices**
-
-- **Server Authority**: Always call replication functions from the server
-- **Validation**: Validate inputs before calling replication functions
-- **Error Handling**: Check for null pointers and valid assets
-- **Performance Monitoring**: Use built-in performance monitoring tools
-
----
-
-## **Troubleshooting**
-
-- **Component Not Found**: Ensure the plugin is enabled and the component is added
-- **Replication Not Working**: Check that the actor has replication enabled
-- **Performance Issues**: Adjust replication settings and use relevancy
-- **Compilation Errors**: Ensure all dependencies are included
-
----
-
-## **Debugging Tools**
-
-- **Network Profiler**: Use UE's network profiler to monitor bandwidth
-- **Replication Logs**: Enable replication logging in project settings
-- **Component Inspection**: Use the Details panel to inspect component settings
-
----
-
-**For more examples and advanced usage, see the [Examples](Examples.md) documentation.**
+### Debug Commands
+- `TestHotJoining` - Test hot joining functionality
+- `TestHighPingPrediction` - Test high ping scenarios
+- `TestLowFPSScenario` - Test low FPS scenarios

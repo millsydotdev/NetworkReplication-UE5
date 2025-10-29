@@ -7,6 +7,10 @@ A comprehensive network replication plugin for Unreal Engine 5.6 that simplifies
 - **Universal Data Replication** - Replicate any data type (strings, floats, vectors, custom objects) across the network
 - **Custom Event System** - Send custom events and messages between clients and servers
 - **Blueprint Integration** - Full Blueprint support with intuitive event binding
+- **Hot Joining Support** - Late-joining clients receive proper game state
+- **Client Prediction** - Immediate visual feedback with server validation
+- **High Ping Optimization** - Smooth gameplay even with high latency
+- **Low FPS Resilience** - Stable performance under low frame rates
 - **Performance Monitoring** - Built-in network performance tracking and optimization
 - **Debug Tools** - Comprehensive debugging and network simulation capabilities
 - **Production Ready** - Optimized for real-world multiplayer games
@@ -125,17 +129,18 @@ void OnCustomEventReceived(FName EventName, const FString& EventData)
 
 Complete documentation is available in the `Docs` folder:
 
-- **API Reference** - Complete function and class documentation
-- **Blueprint Guide** - Step-by-step Blueprint integration
-- **Console Commands** - Full command reference
-- **Troubleshooting** - Common issues and solutions
-- **Performance Guide** - Optimization strategies
+- **[Quick Start](Docs/QuickStart.md)** - Get up and running in minutes
+- **[Advanced Guide](Docs/Advanced.md)** - Master advanced features and patterns
+- **[API Reference](Docs/API_Reference.md)** - Complete function and class documentation
+- **[Troubleshooting](Docs/Troubleshooting.md)** - Common issues and solutions
 
 ## Requirements
 
 - **Unreal Engine 5.6** or later
-- **Visual Studio 2022** (for C++ development)
-- **Windows 10/11** (64-bit)
+- **Visual Studio 2022** (for C++ development on Windows)
+- **Xcode 14+** (for C++ development on Mac)
+- **GCC 9+** (for C++ development on Linux)
+- **Windows 10/11** (64-bit), **macOS 12+**, or **Linux** (Ubuntu 20.04+)
 
 ## Support
 

@@ -13,6 +13,7 @@
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "GameFramework/Actor.h"
+#include "NetworkReplicationTypes.h"
 #include "NetworkReplicationComponent.generated.h"
 
 /**
@@ -36,6 +37,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCustomEventReplicated, FName, Ev
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMotionMatchingReplicated, UObject*, Database);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTrajectoryReplicated, FVector, Position, FRotator, Rotation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPoseSearchReplicated, UObject*, Schema);
+
+/**
+ * Hot joining and prediction delegates
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttachmentInfoReplicated, FAttachmentInfo, AttachmentInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPredictionStateReplicated, FPredictionState, PredictionState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnimationPredicted, FAnimationPredictionData, PredictionData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnimationCorrected, FAnimationPredictionData, CorrectionData);
 
 
 /**
@@ -132,6 +141,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Network Replication|Debug", CallInEditor)
 	FString GetReplicationStats() const;
 
+	// ===== TESTING FUNCTIONS =====
+	UFUNCTION(BlueprintCallable, Category = "Network Replication|Testing", CallInEditor, Exec)
+	void TestHotJoining();
+
+	UFUNCTION(BlueprintCallable, Category = "Network Replication|Testing", CallInEditor, Exec)
+	void TestHighPingPrediction();
+
+	UFUNCTION(BlueprintCallable, Category = "Network Replication|Testing", CallInEditor, Exec)
+	void TestLowFPSScenario();
+
 	// Replication Events
 	UPROPERTY(BlueprintAssignable, Category = "Network Replication|Events")
 	FOnAnimationReplicated OnAnimationReplicated;
@@ -165,6 +184,18 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Network Replication|Motion Matching|Events")
 	FOnPoseSearchReplicated OnPoseSearchReplicated;
 
+	// ===== HOT JOINING AND PREDICTION EVENTS =====
+	UPROPERTY(BlueprintAssignable, Category = "Network Replication|Hot Joining|Events")
+	FOnAttachmentInfoReplicated OnAttachmentInfoReplicated;
+
+	UPROPERTY(BlueprintAssignable, Category = "Network Replication|Prediction|Events")
+	FOnPredictionStateReplicated OnPredictionStateReplicated;
+
+	UPROPERTY(BlueprintAssignable, Category = "Network Replication|Prediction|Events")
+	FOnAnimationPredicted OnAnimationPredicted;
+
+	UPROPERTY(BlueprintAssignable, Category = "Network Replication|Prediction|Events")
+	FOnAnimationCorrected OnAnimationCorrected;
 
 	// ===== DEBUGGING PROPERTIES =====
 	UPROPERTY(BlueprintReadWrite, Category = "Network Replication|Debug")
@@ -175,6 +206,16 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Network Replication|Debug")
 	float LastReplicationTime = 0.0f;
+
+	// ===== REPLICATED PROPERTIES FOR HOT JOINING =====
+	UPROPERTY(ReplicatedUsing = OnRep_AttachmentInfo, BlueprintReadOnly, Category = "Network Replication|Hot Joining")
+	FAttachmentInfo AttachmentInfo;
+
+	UPROPERTY(ReplicatedUsing = OnRep_PredictionState, BlueprintReadOnly, Category = "Network Replication|Prediction")
+	FPredictionState PredictionState;
+
+	UPROPERTY(ReplicatedUsing = OnRep_AnimationPrediction, BlueprintReadOnly, Category = "Network Replication|Prediction")
+	FAnimationPredictionData AnimationPrediction;
 
 protected:
 	// Server RPCs
@@ -256,6 +297,19 @@ protected:
 
 	// Override EndPlay to handle cleanup
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	// Replication functions
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// OnRep functions for hot joining and prediction
+	UFUNCTION()
+	void OnRep_AttachmentInfo();
+
+	UFUNCTION()
+	void OnRep_PredictionState();
+
+	UFUNCTION()
+	void OnRep_AnimationPrediction();
 
 	// Helper functions
 	class UAnimInstance* GetAnimInstance() const;

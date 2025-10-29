@@ -1,312 +1,351 @@
-# Troubleshooting Guide
+# NetworkReplication Plugin - Troubleshooting Guide
 
-This guide helps you resolve common issues with the NetworkReplication plugin.
+Common issues and solutions for the NetworkReplication plugin.
 
-## Common Issues
+## Installation Issues
 
-### Plugin Not Loading
+### Plugin Not Found
 
-If the NetworkReplication plugin is not loading properly:
+**Problem:** Plugin doesn't appear in the Plugins menu.
 
-- Check that the plugin is enabled in your project settings
-- Verify the plugin files are in the correct location
-- Ensure all dependencies are properly installed
+**Solutions:**
+1. Verify the plugin is in the correct location: `Plugins/NetworkReplicationSubsystem/`
+2. Check that `NetworkReplicationSubsystem.uplugin` file exists and is valid
+3. Ensure the plugin is compatible with UE 5.6
+4. Restart the editor after placing the plugin
 
-### Network Connection Issues
-
-#### Connection Timeout
-
-If you're experiencing connection timeouts:
-
-1. Check your network configuration
-2. Verify firewall settings
-3. Ensure the target server is accessible
-
-```cpp
-// Example: Setting connection timeout
-NetworkReplicationComponent->SetConnectionTimeout(30.0f);
+**Verification:**
+```bash
+# Check plugin structure
+ls -la Plugins/NetworkReplicationSubsystem/
+# Should show: .uplugin, Source/, Config/, etc.
 ```
 
-#### Connection Refused
+### Plugin Compilation Errors
 
-When connection is refused:
+**Problem:** Plugin fails to compile or shows errors.
 
-1. Verify server is running
-2. Check port availability
-3. Confirm network permissions
+**Solutions:**
+1. Check that UE 5.6 is properly installed
+2. Verify all required dependencies are available
+3. Clean and rebuild the project
+4. Check the build log in `Saved/Logs/UnrealBuildTool.log`
 
+**Debug Steps:**
+```bash
+# Clean build
+rm -rf Binaries/ Intermediate/ Saved/
+# Regenerate project files
+# Rebuild project
+```
+
+## Runtime Issues
+
+### Component Not Available
+
+**Problem:** NetworkReplicationComponent doesn't appear in the component browser.
+
+**Solutions:**
+1. Ensure the plugin is enabled in Project Settings > Plugins
+2. Check that the plugin compiled successfully
+3. Verify the project targets UE 5.6
+4. Restart the editor
+
+### Replication Not Working
+
+**Problem:** Replication functions don't work or have no effect.
+
+**Common Causes:**
+1. **Not in multiplayer context**: Replication only works in multiplayer
+2. **Missing network replication**: Actor doesn't have replication enabled
+3. **Authority issues**: Calling server functions from client without authority
+4. **Network not initialized**: Network subsystem not properly set up
+
+**Solutions:**
 ```cpp
-// Example: Handling connection refused
-if (ConnectionStatus == EConnectionStatus::Refused)
+// 1. Check if in multiplayer
+if (GetWorld()->GetNetMode() != NM_DedicatedServer && GetWorld()->GetNetMode() != NM_ListenServer)
 {
-    UE_LOG(LogNetworkReplication, Warning, TEXT("Connection refused by server"));
+    UE_LOG(LogTemp, Warning, TEXT("Not in multiplayer context"));
+    return;
+}
+
+// 2. Enable actor replication
+GetOwner()->SetReplicates(true);
+GetOwner()->SetReplicateMovement(true);
+
+// 3. Check authority before server operations
+if (GetOwner()->HasAuthority())
+{
+    // Server operations
+}
+else
+{
+    // Client operations
 }
 ```
 
-### Data Replication Issues
+### Hot Joining Issues
 
-#### Data Not Syncing
+**Problem:** Late-joining clients don't receive proper state.
 
-If data is not syncing between clients:
+**Solutions:**
+1. Ensure `ReplicatedUsing` properties are set correctly
+2. Check that `OnRep_AttachmentInfo()` is implemented
+3. Verify attachment info is set on the server
+4. Test with multiple clients joining at different times
 
-1. Check replication settings
-2. Verify network conditions
-3. Ensure proper component setup
-
+**Debug Steps:**
 ```cpp
-// Example: Enabling replication
-NetworkReplicationComponent->SetIsReplicated(true);
-NetworkReplicationComponent->SetReplicationFrequency(60.0f);
-```
+// Enable debug mode
+bDebugMode = true;
 
-#### Partial Data Loss
-
-When experiencing partial data loss:
-
-1. Check network stability
-2. Verify replication frequency
-3. Review error logs
-
-```cpp
-// Example: Handling data loss
-if (ReplicatedData.IsValid())
+// Check if attachment info is being set
+if (AttachmentInfo.bIsActive)
 {
-    UE_LOG(LogNetworkReplication, Error, TEXT("Data replication failed"));
+    UE_LOG(LogTemp, Log, TEXT("Attachment info is active"));
 }
 ```
 
-### Performance Issues
+### High Ping Issues
 
-#### High Network Usage
+**Problem:** Game feels laggy with high ping.
 
-To reduce network usage:
+**Solutions:**
+1. Implement client-side prediction
+2. Use immediate visual feedback
+3. Add server validation and correction
+4. Optimize network traffic
 
-1. Lower replication frequency
-2. Implement data compression
-3. Use delta compression
-
+**Testing:**
 ```cpp
-// Example: Reducing network usage
-NetworkReplicationComponent->SetReplicationFrequency(30.0f);
-NetworkReplicationComponent->EnableCompression(true);
+// Simulate high ping
+IConsoleManager::Get().FindConsoleVariable(TEXT("Net.PktLag"))->Set(150.0f);
+IConsoleManager::Get().FindConsoleVariable(TEXT("Net.PktLagVariance"))->Set(25.0f);
 ```
 
-#### Memory Leaks
+### Low FPS Crashes
 
-If experiencing memory leaks:
+**Problem:** Game crashes or becomes unstable at low FPS.
 
-1. Check for proper cleanup
-2. Verify object lifecycle management
-3. Review garbage collection
+**Solutions:**
+1. Test with low FPS simulation
+2. Check for null pointer access
+3. Verify component cleanup
+4. Monitor memory usage
 
+**Testing:**
 ```cpp
-// Example: Proper cleanup
-void AMyActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+// Simulate low FPS
+IConsoleManager::Get().FindConsoleVariable(TEXT("t.MaxFPS"))->Set(20.0f);
+IConsoleManager::Get().FindConsoleVariable(TEXT("r.OneFrameThreadLag"))->Set(1);
+```
+
+## Performance Issues
+
+### Network Bandwidth
+
+**Problem:** High network usage or bandwidth.
+
+**Solutions:**
+1. Reduce replication frequency
+2. Use compression for replicated data
+3. Implement relevance filtering
+4. Batch operations when possible
+
+**Optimization:**
+```cpp
+// Only replicate when necessary
+if (ShouldReplicate())
 {
-    if (NetworkReplicationComponent)
-    {
-        NetworkReplicationComponent->Cleanup();
-    }
+    ReplicateAnimation(Montage, PlayRate, StartingPosition);
+}
+```
+
+### Memory Leaks
+
+**Problem:** Memory usage increases over time.
+
+**Solutions:**
+1. Check component cleanup in `EndPlay`
+2. Unbind delegates when components are destroyed
+3. Use weak pointers where appropriate
+4. Monitor with memory profiler
+
+**Cleanup:**
+```cpp
+void UNetworkReplicationComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    // Unbind all delegates
+    OnAnimationReplicated.Clear();
+    OnSoundReplicated.Clear();
+    // ... other delegates
+    
     Super::EndPlay(EndPlayReason);
 }
 ```
 
-### Configuration Issues
+## Debugging
 
-#### Invalid Settings
+### Enable Debug Mode
 
-When encountering invalid settings:
-
-1. Verify configuration values
-2. Check parameter ranges
-3. Review documentation
-
+**Enable debug logging:**
 ```cpp
-// Example: Validating settings
-if (ReplicationFrequency < 1.0f || ReplicationFrequency > 120.0f)
-{
-    UE_LOG(LogNetworkReplication, Error, TEXT("Invalid replication frequency"));
-}
+// In Blueprint or C++
+bDebugMode = true;
 ```
 
-#### Missing Dependencies
+**Check debug output:**
+- Look for logs in the Output Log window
+- Check `Saved/Logs/` directory
+- Use `stat net` console command
 
-If dependencies are missing:
+### Common Debug Commands
 
-1. Check plugin requirements
-2. Verify module dependencies
-3. Ensure proper build configuration
+```bash
+# Network statistics
+stat net
 
-```cpp
-// Example: Checking dependencies
-#if WITH_NETWORKREPLICATION
-    // NetworkReplication specific code
-#endif
+# Show replication info
+showdebug net
+
+# Test hot joining
+TestHotJoining
+
+# Test high ping
+TestHighPingPrediction
+
+# Test low FPS
+TestLowFPSScenario
 ```
 
-### Debugging
+### Log Analysis
 
-#### Enable Debug Logging
+**Check build logs:**
+```bash
+# Look for errors
+grep "error:" Saved/Logs/UnrealBuildTool.log
 
-To enable debug logging:
-
-1. Set log verbosity levels
-2. Enable specific log categories
-3. Configure output destinations
-
-```cpp
-// Example: Debug logging setup
-UE_LOG(LogNetworkReplication, Verbose, TEXT("Debug information"));
+# Look for warnings
+grep "warning:" Saved/Logs/UnrealBuildTool.log
 ```
 
-#### Network Statistics
-
-To monitor network statistics:
-
-1. Enable network profiling
-2. Check bandwidth usage
-3. Monitor connection quality
-
-```cpp
-// Example: Network statistics
-FNetworkReplicationStats Stats = NetworkReplicationComponent->GetNetworkStats();
-UE_LOG(LogNetworkReplication, Log, TEXT("Packets sent: %d"), Stats.PacketsSent);
+**Check runtime logs:**
+```bash
+# Look for replication logs
+grep "NetworkReplication" Saved/Logs/Game.log
 ```
 
-### Error Codes
+## Platform-Specific Issues
 
-#### Common Error Codes
+### Linux Build Issues
 
-| Error Code | Description | Solution |
-|------------|-------------|----------|
-| NR_001 | Plugin not initialized | Initialize the plugin properly |
-| NR_002 | Network connection failed | Check network configuration |
-| NR_003 | Data replication error | Verify replication settings |
+**Problem:** Plugin doesn't build on Linux.
 
-#### Error Handling
+**Solutions:**
+1. Use the provided Linux build scripts
+2. Check UE 5.6 Linux installation
+3. Verify all dependencies are available
+4. Check file permissions
 
-```cpp
-// Example: Error handling
-switch (ErrorCode)
-{
-    case ENetworkReplicationError::PluginNotInitialized:
-        UE_LOG(LogNetworkReplication, Error, TEXT("Plugin not initialized"));
-        break;
-    case ENetworkReplicationError::NetworkConnectionFailed:
-        UE_LOG(LogNetworkReplication, Error, TEXT("Network connection failed"));
-        break;
-    default:
-        UE_LOG(LogNetworkReplication, Error, TEXT("Unknown error"));
-        break;
-}
+**Build Scripts:**
+```bash
+# Make scripts executable
+chmod +x BuildProject.sh TestPluginBuild.sh
+
+# Run build
+./BuildProject.sh Development Linux
+
+# Test plugin
+./TestPluginBuild.sh Development Linux
 ```
 
-### Getting Help
+### Windows Build Issues
 
-#### Log Files
+**Problem:** Plugin doesn't build on Windows.
+
+**Solutions:**
+1. Use Visual Studio 2022
+2. Check Windows SDK version
+3. Verify UE 5.6 installation
+4. Clean and rebuild solution
+
+### Mac Build Issues
+
+**Problem:** Plugin doesn't build on Mac.
+
+**Solutions:**
+1. Use Xcode 14+
+2. Check macOS version compatibility
+3. Verify UE 5.6 Mac installation
+4. Check code signing settings
+
+## Common Error Messages
+
+### "Montage is null"
+**Cause:** Passing null montage to replication function
+**Solution:** Check montage reference before calling
+
+### "Not in multiplayer context"
+**Cause:** Calling replication functions in single-player
+**Solution:** Check `GetWorld()->GetNetMode()` before replication
+
+### "Component not found"
+**Cause:** NetworkReplicationComponent not added to actor
+**Solution:** Add component to actor in Blueprint or C++
+
+### "Authority check failed"
+**Cause:** Calling server functions without proper authority
+**Solution:** Check `GetOwner()->HasAuthority()` before server operations
+
+## Getting Help
+
+### Before Asking for Help
+
+1. **Check this guide** for common solutions
+2. **Enable debug mode** and check logs
+3. **Test in minimal setup** to isolate issues
+4. **Check UE 5.6 compatibility**
+5. **Verify plugin installation**
+
+### Information to Include
 
 When reporting issues, include:
+- UE version (5.6.x)
+- Platform (Windows/Linux/Mac)
+- Plugin version
+- Error messages and logs
+- Steps to reproduce
+- Expected vs actual behavior
 
-1. Engine logs
-2. Network replication logs
-3. System information
+### Resources
 
-#### Contact Information
-
-For additional support:
-
-1. Check the documentation
-2. Review the API reference
-3. Contact support team
-
-### Best Practices
-
-#### Network Optimization
-
-1. Use appropriate replication frequency
-2. Implement data compression
-3. Monitor network usage
-
-#### Error Prevention
-
-1. Validate all inputs
-2. Handle edge cases
-3. Implement proper error handling
-
-```cpp
-// Example: Input validation
-if (ReplicationData.IsValid() && NetworkReplicationComponent)
-{
-    NetworkReplicationComponent->ReplicateData(ReplicationData);
-}
-else
-{
-    UE_LOG(LogNetworkReplication, Warning, TEXT("Invalid replication data"));
-}
-```
-
-### Advanced Troubleshooting
-
-#### Network Diagnostics
-
-For advanced network diagnostics:
-
-1. Enable network profiling
-2. Use network debugging tools
-3. Monitor packet loss
-
-```cpp
-// Example: Network diagnostics
-void AMyActor::RunNetworkDiagnostics()
-{
-    FNetworkDiagnostics Diagnostics = NetworkReplicationComponent->GetDiagnostics();
-    UE_LOG(LogNetworkReplication, Log, TEXT("Packet loss: %.2f%%"), Diagnostics.PacketLoss);
-}
-```
-
-#### Performance Profiling
-
-To profile performance:
-
-1. Use Unreal's profiling tools
-2. Monitor frame times
-3. Check memory usage
-
-```cpp
-// Example: Performance profiling
-void AMyActor::ProfilePerformance()
-{
-    FNetworkReplicationProfile Profile = NetworkReplicationComponent->GetProfile();
-    UE_LOG(LogNetworkReplication, Log, TEXT("Average replication time: %.2f ms"), Profile.AverageReplicationTime);
-}
-```
-
-### Troubleshooting Checklist
-
-#### Before Reporting Issues
-
-1. Check plugin version compatibility
-2. Verify system requirements
-3. Review recent changes
-4. Test in clean project
-
-#### Common Solutions
-
-1. Restart the editor
-2. Rebuild the project
-3. Clear intermediate files
-4. Update plugin version
-
-### Additional Resources
-
-#### Documentation
-
+- [Quick Start Guide](QuickStart.md)
+- [Advanced Guide](Advanced.md)
 - [API Reference](API_Reference.md)
-- [Installation Guide](INSTALLATION.md)
-- [Console Commands](CONSOLE_COMMANDS.md)
+- Project repository and examples
+- Unreal Engine documentation
 
-#### Support
+## Performance Tips
 
-- [Support Information](SUPPORT.md)
-- [Known Issues](README.md#known-issues)
-- [FAQ](README.md#faq)
+### Optimization Checklist
+
+- [ ] Disable debug mode in shipping builds
+- [ ] Use authority checks before server operations
+- [ ] Minimize RPC calls and batch operations
+- [ ] Implement proper cleanup in EndPlay
+- [ ] Test with various network conditions
+- [ ] Monitor memory usage and leaks
+- [ ] Use appropriate replication frequency
+- [ ] Implement client-side prediction for responsiveness
+
+### Testing Checklist
+
+- [ ] Test in multiplayer (2+ clients)
+- [ ] Test hot joining scenarios
+- [ ] Test with high ping (150ms+)
+- [ ] Test with low FPS (20 FPS)
+- [ ] Test on different platforms
+- [ ] Test with various network conditions
+- [ ] Verify cleanup and memory usage
+- [ ] Check for null pointer access

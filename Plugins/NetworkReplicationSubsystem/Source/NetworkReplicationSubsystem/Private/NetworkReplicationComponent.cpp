@@ -18,6 +18,8 @@
 #include "Engine/Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/Console.h"
+#include "HAL/IConsoleManager.h"
 
 UNetworkReplicationComponent::UNetworkReplicationComponent()
 {
@@ -61,7 +63,25 @@ void UNetworkReplicationComponent::ReplicateAnimation(UAnimMontage* Montage, flo
 	}
 	else
 	{
-		// Client: Request server to replicate the animation
+		// Client: Play locally immediately for visual feedback, then request server validation
+		if (UAnimInstance* AnimInstance = GetAnimInstance())
+		{
+			// Client-side prediction: play immediately
+			AnimInstance->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, StartingPosition);
+			
+			// Set prediction data
+			FAnimationPredictionData PredictionData;
+			PredictionData.Montage = Montage;
+			PredictionData.PlayRate = PlayRate;
+			PredictionData.StartingPosition = StartingPosition;
+			PredictionData.PredictionTime = GetWorld()->GetTimeSeconds();
+			PredictionData.bIsValid = true;
+			
+			AnimationPrediction = PredictionData;
+			OnAnimationPredicted.Broadcast(PredictionData);
+		}
+		
+		// Request server to replicate the animation
 		ServerPlayMontage(Montage, PlayRate, StartingPosition);
 	}
 }
@@ -304,6 +324,19 @@ void UNetworkReplicationComponent::MulticastSpawnActorAttached_Implementation(TS
 	AActor* SpawnedActor = World->SpawnActor<AActor>(ActorClass, SpawnLocation, SpawnRotation);
 	if (SpawnedActor)
 	{
+		// Create attachment info for hot joining support
+		FAttachmentInfo NewAttachment;
+		NewAttachment.Component = SpawnedActor->GetRootComponent();
+		NewAttachment.SocketName = AttachSocketName;
+		NewAttachment.Owner = GetOwner();
+		NewAttachment.bKeepWorldTransform = true;
+		NewAttachment.RelativeTransform = FTransform(RotationOffset, LocationOffset, FVector::OneVector);
+		NewAttachment.bIsActive = true;
+
+		// Set the replicated property for hot joining
+		AttachmentInfo = NewAttachment;
+
+		// Apply immediate attachment for current clients
 		if (AttachSocketName != NAME_None)
 		{
 			SpawnedActor->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform, AttachSocketName);
@@ -312,6 +345,7 @@ void UNetworkReplicationComponent::MulticastSpawnActorAttached_Implementation(TS
 		{
 			SpawnedActor->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 		}
+
 		OnActorSpawned.Broadcast(SpawnedActor);
 	}
 }
@@ -351,6 +385,16 @@ void UNetworkReplicationComponent::EndPlay(const EEndPlayReason::Type EndPlayRea
 {
 	OnComponentDestroyed.Broadcast(this);
 	Super::EndPlay(EndPlayReason);
+}
+
+void UNetworkReplicationComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Replicate hot joining and prediction properties
+	DOREPLIFETIME(UNetworkReplicationComponent, AttachmentInfo);
+	DOREPLIFETIME(UNetworkReplicationComponent, PredictionState);
+	DOREPLIFETIME(UNetworkReplicationComponent, AnimationPrediction);
 }
 
 // Helper functions
@@ -699,4 +743,158 @@ void UNetworkReplicationComponent::MulticastReplicateTrajectoryData_Implementati
 		UE_LOG(LogTemp, Log, TEXT("Trajectory Data Replicated: Position=%s, Rotation=%s"), 
 			*Position.ToString(), *Rotation.ToString());
 	}
+}
+
+// ===== HOT JOINING AND PREDICTION IMPLEMENTATIONS =====
+
+void UNetworkReplicationComponent::OnRep_AttachmentInfo()
+{
+	if (bDebugMode)
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnRep_AttachmentInfo: Component=%s, Socket=%s, Active=%s"), 
+			AttachmentInfo.Component ? *AttachmentInfo.Component->GetName() : TEXT("None"),
+			*AttachmentInfo.SocketName.ToString(),
+			AttachmentInfo.bIsActive ? TEXT("True") : TEXT("False"));
+	}
+
+	// Apply attachment for hot joining clients
+	if (AttachmentInfo.bIsActive && AttachmentInfo.Component && AttachmentInfo.Owner)
+	{
+		if (AttachmentInfo.SocketName != NAME_None)
+		{
+			AttachmentInfo.Component->AttachToComponent(
+				AttachmentInfo.Owner->GetRootComponent(),
+				AttachmentInfo.bKeepWorldTransform ? FAttachmentTransformRules::KeepWorldTransform : FAttachmentTransformRules::KeepRelativeTransform,
+				AttachmentInfo.SocketName);
+		}
+		else
+		{
+			AttachmentInfo.Component->AttachToComponent(
+				AttachmentInfo.Owner->GetRootComponent(),
+				AttachmentInfo.bKeepWorldTransform ? FAttachmentTransformRules::KeepWorldTransform : FAttachmentTransformRules::KeepRelativeTransform);
+		}
+
+		// Apply relative transform if specified
+		if (!AttachmentInfo.RelativeTransform.Equals(FTransform::Identity))
+		{
+			AttachmentInfo.Component->SetRelativeTransform(AttachmentInfo.RelativeTransform);
+		}
+	}
+
+	OnAttachmentInfoReplicated.Broadcast(AttachmentInfo);
+}
+
+void UNetworkReplicationComponent::OnRep_PredictionState()
+{
+	if (bDebugMode)
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnRep_PredictionState: Predicting=%s, Frame=%d, Correction=%.2f"), 
+			PredictionState.bIsPredicting ? TEXT("True") : TEXT("False"),
+			PredictionState.InputFrame,
+			PredictionState.CorrectionFactor);
+	}
+
+	OnPredictionStateReplicated.Broadcast(PredictionState);
+}
+
+void UNetworkReplicationComponent::OnRep_AnimationPrediction()
+{
+	if (bDebugMode)
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnRep_AnimationPrediction: Montage=%s, Valid=%s"), 
+			AnimationPrediction.Montage ? *AnimationPrediction.Montage->GetName() : TEXT("None"),
+			AnimationPrediction.bIsValid ? TEXT("True") : TEXT("False"));
+	}
+
+	if (AnimationPrediction.bIsValid)
+	{
+		OnAnimationPredicted.Broadcast(AnimationPrediction);
+	}
+	else
+	{
+		OnAnimationCorrected.Broadcast(AnimationPrediction);
+	}
+}
+
+// ===== TESTING FUNCTIONS =====
+
+void UNetworkReplicationComponent::TestHotJoining()
+{
+	if (bDebugMode)
+	{
+		UE_LOG(LogTemp, Log, TEXT("TestHotJoining: Starting hot joining test"));
+	}
+
+	// Simulate spawning an attached actor for hot joining test
+	if (GetOwner()->HasAuthority())
+	{
+		// Create a test attachment info
+		FAttachmentInfo TestAttachment;
+		TestAttachment.bIsActive = true;
+		TestAttachment.Owner = GetOwner();
+		TestAttachment.SocketName = NAME_None;
+		TestAttachment.bKeepWorldTransform = true;
+		TestAttachment.RelativeTransform = FTransform::Identity;
+
+		// Set the replicated property to trigger OnRep for hot joiners
+		AttachmentInfo = TestAttachment;
+
+		UE_LOG(LogTemp, Log, TEXT("TestHotJoining: Set attachment info for hot joining test"));
+	}
+}
+
+void UNetworkReplicationComponent::TestHighPingPrediction()
+{
+	if (bDebugMode)
+	{
+		UE_LOG(LogTemp, Log, TEXT("TestHighPingPrediction: Starting high ping prediction test"));
+	}
+
+	// Set up high ping simulation via console commands
+	if (IConsoleVariable* NetPktLag = IConsoleManager::Get().FindConsoleVariable(TEXT("Net.PktLag")))
+	{
+		NetPktLag->Set(150.0f); // 150ms lag
+		UE_LOG(LogTemp, Log, TEXT("TestHighPingPrediction: Set Net.PktLag to 150ms"));
+	}
+
+	if (IConsoleVariable* NetPktLagVariance = IConsoleManager::Get().FindConsoleVariable(TEXT("Net.PktLagVariance")))
+	{
+		NetPktLagVariance->Set(25.0f); // 25ms variance
+		UE_LOG(LogTemp, Log, TEXT("TestHighPingPrediction: Set Net.PktLagVariance to 25ms"));
+	}
+
+	// Test animation prediction
+	if (GetOwner()->HasAuthority())
+	{
+        FAnimationPredictionData TestPrediction;
+        TestPrediction.bIsValid = true;
+        TestPrediction.PredictionTime = GetWorld()->GetTimeSeconds();
+
+		AnimationPrediction = TestPrediction;
+		UE_LOG(LogTemp, Log, TEXT("TestHighPingPrediction: Set animation prediction data"));
+	}
+}
+
+void UNetworkReplicationComponent::TestLowFPSScenario()
+{
+	if (bDebugMode)
+	{
+		UE_LOG(LogTemp, Log, TEXT("TestLowFPSScenario: Starting low FPS test"));
+	}
+
+	// Set low FPS via console commands
+	if (IConsoleVariable* MaxFPS = IConsoleManager::Get().FindConsoleVariable(TEXT("t.MaxFPS")))
+	{
+		MaxFPS->Set(20.0f); // 20 FPS
+		UE_LOG(LogTemp, Log, TEXT("TestLowFPSScenario: Set t.MaxFPS to 20"));
+	}
+
+	if (IConsoleVariable* OneFrameThreadLag = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OneFrameThreadLag")))
+	{
+		OneFrameThreadLag->Set(1); // Enable one frame thread lag
+		UE_LOG(LogTemp, Log, TEXT("TestLowFPSScenario: Enabled r.OneFrameThreadLag"));
+	}
+
+	// Test replication under low FPS conditions
+	UE_LOG(LogTemp, Log, TEXT("TestLowFPSScenario: Low FPS test configured - monitor replication performance"));
 }
