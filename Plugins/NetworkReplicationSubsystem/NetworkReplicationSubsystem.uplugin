@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
   "Version": 1,
-  "VersionName": "1.0.0",
+  "VersionName": "1.1.0",
   "FriendlyName": "Network Replication Subsystem",
   "Description": "A comprehensive network replication plugin for Unreal Engine 5.6 that simplifies multiplayer game development with Blueprint-friendly components and advanced networking features. Features universal data replication, custom event systems, performance monitoring, and debug tools.",
   "Category": "Networking",
@@ -11,24 +11,34 @@
   "MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/86ff58cf-6f61-4a31-8514-52e4cc3e43eb",
   "FabURL": "https://www.fab.com/portal/listings/86ff58cf-6f61-4a31-8514-52e4cc3e43eb",
   "SupportURL": "https://discord.gg/uyJ636Y4u8",
-  "Icon": "Resources/NSSLogo.png",
+  "Icon": "Resources/Icon128.png",
   "CanContainContent": false,
   "IsBetaVersion": false,
   "IsExperimentalVersion": false,
   "Installed": false,
   "EnabledByDefault": false,
   "EngineVersion": "5.6",
-  "SupportedTargetPlatforms": [ "Win64", "Mac", "Linux" ],
-  "SupportedPrograms": [ "UnrealEditor" ],
+  "SupportedTargetPlatforms": [
+    "Win64",
+    "Mac",
+    "Linux"
+  ],
+  "SupportedPrograms": [
+    "UnrealEditor"
+  ],
   "Modules": [
     {
       "Name": "NetworkReplicationSubsystem",
       "Type": "Runtime",
       "LoadingPhase": "Default",
-      "PlatformAllowList": [ "Win64", "Mac", "Linux" ],
-      "AdditionalDependencies": [ 
-        "Engine", 
-        "CoreUObject", 
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ],
+      "AdditionalDependencies": [
+        "Engine",
+        "CoreUObject",
         "AnimationCore",
         "Niagara",
         "Chooser",
@@ -67,6 +77,8 @@
       "Pose Search",
       "Trajectory"
     ],
-    "EngineVersions": [ "5.6" ]
+    "EngineVersions": [
+      "5.6"
+    ]
   }
 }
