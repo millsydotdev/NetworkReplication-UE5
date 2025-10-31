@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
   "Version": 1,
-  "VersionName": "1.1.0",
+  "VersionName": "1.1.1",
   "FriendlyName": "Network Replication Subsystem",
   "Description": "A comprehensive network replication plugin for Unreal Engine 5.6 that simplifies multiplayer game development with Blueprint-friendly components and advanced networking features. Features universal data replication, custom event systems, performance monitoring, and debug tools.",
   "Category": "Networking",
